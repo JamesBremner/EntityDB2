@@ -66,12 +66,12 @@ namespace raven
             }
         }
 
-    void cEntityDB::add( 
-        const std::vector<std::pair<int,std::string>>& vv )
+        void cEntityDB::add(
+            const std::vector<std::pair<int, std::string>> &vv)
         {
             cValue v;
             v.pid = ++lastPID;
-            for( auto& p : vv )
+            for (auto &p : vv)
             {
                 v.aid = p.first;
                 v.value = p.second;
@@ -79,5 +79,16 @@ namespace raven
             }
             save();
         }
-}
+        void cEntityDB::update(const cValue &v)
+        {
+            for (auto &old : myValue)
+            {
+                if (old.pid == v.pid)
+                {
+                    if (old.aid == v.aid)
+                        old.value = v.value;
+                }
+            }
+        }
+    }
 }

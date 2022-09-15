@@ -23,6 +23,7 @@ namespace raven
             void load(const std::string &fname);
             void save();
             void add( const std::vector<std::pair<int,std::string>>& vv );
+            void update( const cValue& v );
 
         protected:
             std::vector<cValue> myValue; /// the database

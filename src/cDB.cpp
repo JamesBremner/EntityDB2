@@ -48,60 +48,46 @@ void cDB::updateNurse(
     const std::string &licence,
     const std::string &service)
 {
-    // for (auto &v : myValue)
-    // {
-    //     if (v.pid == pid)
-    //     {
-    //         switch (v.aid)
-    //         {
-    //         case eAttribute::name:
-    //             v.value = name;
-    //             break;
-    //         case eAttribute::nurselicence:
-    //             v.value = licence;
-    //             break;
-    //         case eAttribute::service:
-    //             v.value = service;
-    //             break;
-    //         default:
-    //             break;
-    //         }
-    //     }
-    // }
-    // save();
+    raven::edb::cValue v;
+    v.pid = pid;
+
+    v.aid = (int)eAttribute::name;
+    v.value = name;
+    update( v );
+    v.aid = (int)eAttribute::nurselicence;
+    v.value = licence;
+    update( v );
+    v.aid = (int)eAttribute::service;
+    v.value = service;
+    update( v );
+
+    save();
 }
 
 void cDB::updatePatient(
     int pid,
     const std::vector<std::string> &vals)
 {
-    //     for (auto &v : myValue)
-    // {
-    //     if (v.pid == pid)
-    //     {
-    //         switch (v.aid)
-    //         {
-    //         case eAttribute::name:
-    //             v.value = vals[0];
-    //             break;
-    //         case eAttribute::expire:
-    //             v.value = vals[1];
-    //             break;
-    //         case eAttribute::certification:
-    //             v.value = vals[2];
-    //             break;
-    //         case eAttribute::authorization:
-    //             v.value = vals[3];
-    //             break;
-    //         case eAttribute::supplies:
-    //             v.value = vals[4];
-    //             break;
-    //         default:
-    //             break;
-    //         }
-    //     }
-    // }
-    // save();
+    raven::edb::cValue v;
+    v.pid = pid;
+
+    v.aid = (int)eAttribute::name;
+    v.value = vals[0];
+    update( v );
+    v.aid = (int)eAttribute::expire;
+    v.value = vals[1];
+    update( v );
+    v.aid = (int)eAttribute::certification;
+    v.value = vals[2];
+    update( v );
+    v.aid = (int)eAttribute::authorization;
+    v.value = vals[3];
+    update( v );
+    v.aid = (int)eAttribute::supplies;
+    v.value = vals[4];
+    update( v );
+
+    save();
 }
 
 cDB::vperson_t cDB::nursebyDate(int att)
