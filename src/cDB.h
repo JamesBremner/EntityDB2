@@ -1,5 +1,6 @@
+#include "cEntity.h"
 
-class cDB
+class cDB : public raven::edb::cEntityDB
 {
     /// @brief The different attributes in database
     enum class eAttribute
@@ -75,9 +76,9 @@ public:
         const std::vector<std::string>& vals     );
 
 private:
-    std::string myfname;
-    static int lastPID;
-    std::vector<sValue> myValue; /// the database
+    // std::string myfname;
+    // static int lastPID;
+    // std::vector<sValue> myValue; /// the database
     vperson_t myNurseList;       /// the displayed nurses
     vperson_t myPatientList;     /// the displayed patients
 
@@ -87,7 +88,7 @@ private:
     void sort(
         vperson_t &list,
         int att);
-    void save();
+    // void save();
     void load();
     long long  secs(
         const person_t& p,
