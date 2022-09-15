@@ -53,13 +53,13 @@ void cDB::updateNurse(
 
     v.aid = (int)eAttribute::name;
     v.value = name;
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::nurselicence;
     v.value = licence;
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::service;
     v.value = service;
-    update( v );
+    update(v);
 
     save();
 }
@@ -73,19 +73,19 @@ void cDB::updatePatient(
 
     v.aid = (int)eAttribute::name;
     v.value = vals[0];
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::expire;
     v.value = vals[1];
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::certification;
     v.value = vals[2];
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::authorization;
     v.value = vals[3];
-    update( v );
+    update(v);
     v.aid = (int)eAttribute::supplies;
     v.value = vals[4];
-    update( v );
+    update(v);
 
     save();
 }
@@ -132,19 +132,11 @@ cDB::person_t cDB::nurselist(int listIndex)
 }
 cDB::person_t cDB::nursePID(int pid)
 {
-    person_t ret;
-    ret.first = pid;
-    ret.second.resize(4);
-    for (auto &v : myValue)
-    {
-        if (v.aid == (int)eAttribute::name && v.pid == pid)
-            ret.second[0] = v.value;
-        if (v.aid == (int)eAttribute::nurselicence && v.pid == pid)
-            ret.second[1] = v.value;
-        if (v.aid == (int)eAttribute::service && v.pid == pid)
-            ret.second[2] = v.value;
-    }
-    return ret;
+    return get(
+        pid,
+        {(int)eAttribute::name,
+         (int)eAttribute::nurselicence,
+         (int)eAttribute::service});
 }
 cDB::person_t cDB::patientlist(int listIndex)
 {
@@ -153,23 +145,13 @@ cDB::person_t cDB::patientlist(int listIndex)
 }
 cDB::person_t cDB::patientPID(int pid)
 {
-    person_t ret;
-    ret.first = pid;
-    ret.second.resize(5);
-    for (auto &v : myValue)
-    {
-        if (v.aid == (int)eAttribute::name && v.pid == pid)
-            ret.second[0] = v.value;
-        if (v.aid == (int)eAttribute::expire && v.pid == pid)
-            ret.second[1] = v.value;
-        if (v.aid == (int)eAttribute::certification && v.pid == pid)
-            ret.second[2] = v.value;
-        if (v.aid == (int)eAttribute::authorization && v.pid == pid)
-            ret.second[3] = v.value;
-        if (v.aid == (int)eAttribute::supplies && v.pid == pid)
-            ret.second[4] = v.value;
-    }
-    return ret;
+    return get(
+        pid,
+        {(int)eAttribute::name,
+         (int)eAttribute::expire,
+         (int)eAttribute::certification,
+         (int)eAttribute::authorization,
+         (int)eAttribute::authorization});
 }
 
 long long cDB::secs(
@@ -196,4 +178,3 @@ void cDB::sort(
             return (secs(a, att) < secs(b, att));
         });
 }
-

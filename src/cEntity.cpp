@@ -90,5 +90,22 @@ namespace raven
                 }
             }
         }
+        entityDesc_t cEntityDB::get(
+            int pid, 
+            const std::vector<int>& vatt)
+        {
+            entityDesc_t ret;
+            ret.first = pid;
+            for( auto att : vatt )
+            {
+                for( auto& v : myValue )
+                {
+                    if( v.pid == pid )
+                        if( v.aid == att )
+                            ret.second.push_back( v.value );
+                }
+            }
+            return ret;
+        }
     }
 }
