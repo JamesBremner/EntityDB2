@@ -5,14 +5,18 @@ namespace raven
     namespace edb
     {
         /// @brief A pair describing an entity
-        /// first is the id
+        /// first is the entity id
         /// second is a vector of strings containing the attributes
         typedef std::pair<
             int, std::vector<std::string>>
             entityDesc_t;
+
+        /// @brief vector of entity descriptions
         typedef std::vector<
             entityDesc_t >
             entityList_t;
+
+        /// @brief An attribute
 
         class cValue
         {
@@ -21,12 +25,27 @@ namespace raven
             int pid;           /// entity ID
             std::string value; /// value of attribute
 
+            // replaces '_' with ' ' in value
+
             void text_from_file();
+
+            /// @brief prepare text to write to storage file
+            /// @return text, with ' ' in value replaced with '_'
+
             std::string text_for_file();
         };
+
+        /// @brief A base class for all entities
+
         class cEntity
         {
         public:
+
+            /** CTOR
+             * param[in] type name of entity type
+             * param[in] vector of attribute types
+             */
+
             cEntity(
                 std::string type,
                 const std::vector<int> &vAtts)
@@ -34,7 +53,15 @@ namespace raven
                 myAtts(vAtts)
             {
             }
+
+            /// @brief set attribute values
+            /// @param[in] vals values
+
             void set(const std::vector<std::string> &vals);
+            
+            /// @brief get attributes
+            /// @return vector of attribute values
+
             std::vector<cValue> get() const;
 
             const std::string& type() const
@@ -51,6 +78,15 @@ namespace raven
             std::vector<int> myAtts;
             std::vector<std::string> myVals;
         };
+        
+        /** @brief A database if entities
+         * 
+         * Each entity is a set of attributes
+         * - attribute ID
+         * - entity ID
+         * - attribute value
+         */
+
         class cEntityDB
         {
         public:
@@ -59,20 +95,29 @@ namespace raven
 
             void load(const std::string &fname);
 
-            /// @brief save to permanent storage
+            /// @brief save to permanent storage using filename from last load()
+
             void save();
 
             /// @brief add a new entity
             /// @param[in] vv attribute values
 
             void add(const std::vector<std::pair<int, std::string>> &vv);
+
+            /// @brief add a new entity
+            /// @param[in] e new entity
+
             void add(const cEntity &e);
+
+            /// @brief update an entity's values
+            /// @param[in] e entity with new values
+            /// @param pid entity ID to update
 
             void update(
                 const cEntity &e,
                 int pid );
 
-            /** @brief update an entity value
+            /** @brief update an entity attribute value
              * @param[in] v new value
              *
              * the value that matches input attribute and id will be updated
@@ -90,14 +135,18 @@ namespace raven
                 int pid,
                 const std::vector<int> &vatt);
 
+            /// @brief list of entities of same type
+            /// @param[in] e entity of type reuired
+            /// @return entity list
+
             entityList_t entitylist(
                 const cEntity& e );
             
 
         protected:
             std::vector<cValue> myValue; /// the database
-            std::string myfname;
-            static int lastPID;
+            std::string myfname;         /// filename for permanent storage
+            static int lastPID;          /// ID of last new entity added
         };
     }
 }
