@@ -10,6 +10,9 @@ namespace raven
         typedef std::pair<
             int, std::vector<std::string>>
             entityDesc_t;
+        typedef std::vector<
+            entityDesc_t >
+            entityList_t;
 
         class cValue
         {
@@ -33,6 +36,15 @@ namespace raven
             }
             void set(const std::vector<std::string> &vals);
             std::vector<cValue> get() const;
+
+            const std::string& type() const
+            {
+                return myType;
+            }
+            const std::vector<int>& AttibuteIndices() const
+            {
+                return myAtts;
+            }
 
         private:
             std::string myType;
@@ -77,6 +89,10 @@ namespace raven
             entityDesc_t get(
                 int pid,
                 const std::vector<int> &vatt);
+
+            entityList_t entitylist(
+                const cEntity& e );
+            
 
         protected:
             std::vector<cValue> myValue; /// the database

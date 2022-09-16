@@ -91,20 +91,23 @@ namespace raven
         }
         void cEntityDB::update(
             const cEntity &e,
-            int pid )
+            int pid)
+        {
+            for (auto &av : e.get())
             {
-                for( auto& av : e.get()) {
-                    for( auto& old : myValue ) {
-                        if( old.pid != pid )
-                            continue;
-                        if( old.aid == av.aid ) {
-                            old.value = av.value;
-                            break;
-                        }
+                for (auto &old : myValue)
+                {
+                    if (old.pid != pid)
+                        continue;
+                    if (old.aid == av.aid)
+                    {
+                        old.value = av.value;
+                        break;
                     }
                 }
-                save();
             }
+            save();
+        }
 
         void cEntityDB::update(const cValue &v)
         {
@@ -119,7 +122,7 @@ namespace raven
         }
         entityDesc_t cEntityDB::get(
             int pid,
-            const std::vector<int> &vatt) 
+            const std::vector<int> &vatt)
         {
             entityDesc_t ret;
             ret.first = pid;
@@ -130,6 +133,22 @@ namespace raven
                     if (v.pid == pid)
                         if (v.aid == att)
                             ret.second.push_back(v.value);
+                }
+            }
+            return ret;
+        }
+        entityList_t cEntityDB::entitylist(
+            const cEntity &e)
+        {
+            entityList_t ret;
+            for (auto &v : myValue)
+            {
+                if (v.aid == 1 && v.value == e.type())
+                {
+                    ret.push_back(
+                        get(
+                            v.pid,
+                            e.AttibuteIndices()));
                 }
             }
             return ret;
@@ -149,9 +168,12 @@ namespace raven
                 v.value = myVals[k];
                 ret.push_back(v);
             }
+
+            // type attribute
             v.aid = 1;
             v.value = myType;
-            ret.push_back( v );
+            ret.push_back(v);
+
             return ret;
         }
 

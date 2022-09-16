@@ -4,11 +4,26 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 #include <wex.h>
 #include <inputbox.h>
 #include "cStarterGUI.h"
 
-#include "cDB.h"
+#include "cEntity.h"
+
+/// @brief The different attributes in database
+enum class eAttribute
+{
+    none,
+    role,
+    name,
+    nurselicence,
+    service,
+    expire,
+    certification,
+    authorization,
+    supplies,
+};
 
 class cNurse : public raven::edb::cEntity
 {
@@ -57,6 +72,7 @@ public:
           lbPatientOrder(wex::maker::make<wex::label>(plPatient)),
           chPatientOrder(wex::maker::make<wex::choice>(plPatient))
     {
+        theDB.load("hhct.txt");
 
         tabs.move(0, 0, 1000, 500);
         tabs.tabWidth(200);
@@ -86,7 +102,9 @@ private:
     wex::label &lbPatientOrder;
     wex::choice &chPatientOrder;
 
-    cDB theDB;
+    raven::edb::cEntityDB theDB;
+    raven::edb::entityList_t myNurseList;
+    raven::edb::entityList_t myPatientList;
 
     void ConstructNursesPanel();
     void ConstructPatientsPanel();
@@ -99,6 +117,31 @@ private:
     void listPatient();
     void editPatient();
 };
+
+long long secs(
+    const raven::edb::entityDesc_t &p,
+    int index)
+{
+    using namespace std::chrono;
+    std::tm tm = {};
+    std::istringstream ina{p.second[index]};
+    ina >> std::get_time(&tm, "%Y-%m-%d");
+    return system_clock::from_time_t(std::mktime(&tm)).time_since_epoch().count();
+}
+
+void sort(
+    raven::edb::entityList_t &list,
+    int att)
+{
+    using namespace std::chrono;
+
+    std::sort(
+        list.begin(), list.end(),
+        [&](raven::edb::entityDesc_t &a, raven::edb::entityDesc_t &b) -> bool
+        {
+            return (secs(a, att) < secs(b, att));
+        });
+}
 
 void cGUI::ConstructNursesPanel()
 {
@@ -196,8 +239,9 @@ void cGUI::addNurse()
 }
 void cGUI::editNurse()
 {
-    auto nurse = theDB.nurselist(
-        lsNurse.selectedIndex());
+    cNurse N;
+    int pid = myNurseList[lsNurse.selectedIndex()].first;
+    auto nurse = theDB.get(pid, N.AttibuteIndices());
 
     wex::inputbox ib;
     ib.text("Nurse");
@@ -240,8 +284,9 @@ void cGUI::addPatient()
 }
 void cGUI::editPatient()
 {
-    auto patient = theDB.patientlist(
-        lsPatient.selectedIndex());
+    cPatient P;
+    int pid = myPatientList[lsPatient.selectedIndex()].first;
+    auto patient = theDB.get(pid, P.AttibuteIndices());
 
     wex::inputbox ib;
     ib.text("Patient");
@@ -260,7 +305,6 @@ void cGUI::editPatient()
     vals.push_back(ib.value("Certification"));
     vals.push_back(ib.value("Authorization"));
     vals.push_back(ib.value("Supplies"));
-    cPatient P;
     P.set(vals);
     theDB.update(P, patient.first);
 }
@@ -283,8 +327,11 @@ void cGUI::listNurse()
         return;
     }
 
+    myNurseList = theDB.entitylist(cNurse());
+    sort(myNurseList, dateIndex);
+
     // populate list
-    for (auto &n : theDB.nursebyDate(dateIndex))
+    for (auto &n : myNurseList)
     {
         std::stringstream ss;
         for (auto &s : n.second)
@@ -297,18 +344,25 @@ void cGUI::listNurse()
 void cGUI::listPatient()
 {
     lsPatient.clear();
-    for (auto &n :
-         theDB.patientbyDate(
-             chPatientOrder.selectedIndex()))
+
+    myPatientList = theDB.entitylist(cPatient());
+    sort(
+        myPatientList,
+        chPatientOrder.selectedIndex() + 1);
+
+    // populate list
+    for (auto &n : myPatientList)
     {
         std::stringstream ss;
         for (auto &s : n.second)
         {
-            ss << std::setw(12) << s;
+            ss << std::setw(16) << s;
         }
         lsPatient.add(ss.str());
     }
 }
+
+
 
 main()
 {
