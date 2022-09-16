@@ -10,7 +10,31 @@
 
 #include "cDB.h"
 
+class cNurse : public raven::edb::cEntity
+{
+public:
+    cNurse()
+        : cEntity("nurse",
+                  {(int)eAttribute::name,
+                   (int)eAttribute::nurselicence,
+                   (int)eAttribute::service})
+    {
+    }
+};
 
+class cPatient : public raven::edb::cEntity
+{
+public:
+    cPatient()
+        : cEntity("patient",
+                  {(int)eAttribute::name,
+                   (int)eAttribute::expire,
+                   (int)eAttribute::certification,
+                   (int)eAttribute::authorization,
+                   (int)eAttribute::supplies})
+    {
+    }
+};
 
 class cGUI : public cStarterGUI
 {
@@ -76,9 +100,6 @@ private:
     void editPatient();
 };
 
-
-
-
 void cGUI::ConstructNursesPanel()
 {
     lbNursePanel.move(20, 40, 100, 30);
@@ -115,7 +136,6 @@ void cGUI::ConstructNursesPanel()
             listNurse();
         });
     listNurse();
-
 }
 
 void cGUI::ConstructPatientsPanel()
@@ -145,7 +165,7 @@ void cGUI::ConstructPatientsPanel()
         });
 
     lsPatient.move(10, 120, 900, 400);
-        lsPatient.events().select(
+    lsPatient.events().select(
         lsPatient.id(),
         [&]
         {
@@ -166,10 +186,13 @@ void cGUI::addNurse()
 
     ib.showModal();
 
-    theDB.addNurse(
-        ib.value("Name"),
-        ib.value("Licence"),
-        ib.value("Service"));
+    std::vector<std::string> vals;
+    vals.push_back(ib.value("Name"));
+    vals.push_back(ib.value("Licence"));
+    vals.push_back(ib.value("Service"));
+    cNurse N;
+    N.set(vals);
+    theDB.add(N);
 }
 void cGUI::editNurse()
 {
@@ -184,11 +207,13 @@ void cGUI::editNurse()
 
     ib.showModal();
 
-    theDB.updateNurse(
-        nurse.first,
-        ib.value("Name"),
-        ib.value("Licence"),
-        ib.value("Service"));
+    std::vector<std::string> vals;
+    vals.push_back(ib.value("Name"));
+    vals.push_back(ib.value("Licence"));
+    vals.push_back(ib.value("Service"));
+    cNurse P;
+    P.set(vals);
+    theDB.update(P, nurse.first);
 }
 void cGUI::addPatient()
 {
@@ -209,11 +234,13 @@ void cGUI::addPatient()
     vals.push_back(ib.value("Certification"));
     vals.push_back(ib.value("Authorization"));
     vals.push_back(ib.value("Supplies"));
-    theDB.addPatient( vals );
+    cPatient P;
+    P.set(vals);
+    theDB.add(P);
 }
 void cGUI::editPatient()
 {
-     auto patient = theDB.patientlist(
+    auto patient = theDB.patientlist(
         lsPatient.selectedIndex());
 
     wex::inputbox ib;
@@ -225,7 +252,7 @@ void cGUI::editPatient()
     ib.add("Authorization", patient.second[3]);
     ib.add("Supplies", patient.second[4]);
 
-    ib.showModal(); 
+    ib.showModal();
 
     std::vector<std::string> vals;
     vals.push_back(ib.value("Name"));
@@ -233,9 +260,9 @@ void cGUI::editPatient()
     vals.push_back(ib.value("Certification"));
     vals.push_back(ib.value("Authorization"));
     vals.push_back(ib.value("Supplies"));
-    theDB.updatePatient( 
-        patient.first,
-        vals ); 
+    cPatient P;
+    P.set(vals);
+    theDB.update(P, patient.first);
 }
 void cGUI::listNurse()
 {
@@ -255,7 +282,7 @@ void cGUI::listNurse()
     default:
         return;
     }
-    
+
     // populate list
     for (auto &n : theDB.nursebyDate(dateIndex))
     {
@@ -272,7 +299,7 @@ void cGUI::listPatient()
     lsPatient.clear();
     for (auto &n :
          theDB.patientbyDate(
-            chPatientOrder.selectedIndex()))
+             chPatientOrder.selectedIndex()))
     {
         std::stringstream ss;
         for (auto &s : n.second)

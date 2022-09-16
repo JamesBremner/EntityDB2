@@ -23,11 +23,25 @@ namespace raven
         };
         class cEntity
         {
+        public:
+            cEntity(
+                std::string type,
+                const std::vector<int> &vAtts)
+                : myType( type ),
+                myAtts(vAtts)
+            {
+            }
+            void set(const std::vector<std::string> &vals);
+            std::vector<cValue> get() const;
+
+        private:
+            std::string myType;
+            std::vector<int> myAtts;
+            std::vector<std::string> myVals;
         };
         class cEntityDB
         {
         public:
-
             /// @brief read permanent storage
             /// @param[in] fname file path
 
@@ -40,13 +54,18 @@ namespace raven
             /// @param[in] vv attribute values
 
             void add(const std::vector<std::pair<int, std::string>> &vv);
+            void add(const cEntity &e);
+
+            void update(
+                const cEntity &e,
+                int pid );
 
             /** @brief update an entity value
-            * @param[in] v new value
-            * 
-            * the value that matches input attribute and id will be updated
-            * permanent storage is not updated, save() must be called when updates complete
-            */
+             * @param[in] v new value
+             *
+             * the value that matches input attribute and id will be updated
+             * permanent storage is not updated, save() must be called when updates complete
+             */
 
             void update(const cValue &v);
 

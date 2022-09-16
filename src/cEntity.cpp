@@ -79,6 +79,33 @@ namespace raven
             }
             save();
         }
+        void cEntityDB::add(const cEntity &e)
+        {
+            lastPID++;
+            for (auto &av : e.get())
+            {
+                av.pid = lastPID;
+                myValue.push_back(av);
+            }
+            save();
+        }
+        void cEntityDB::update(
+            const cEntity &e,
+            int pid )
+            {
+                for( auto& av : e.get()) {
+                    for( auto& old : myValue ) {
+                        if( old.pid != pid )
+                            continue;
+                        if( old.aid == av.aid ) {
+                            old.value = av.value;
+                            break;
+                        }
+                    }
+                }
+                save();
+            }
+
         void cEntityDB::update(const cValue &v)
         {
             for (auto &old : myValue)
@@ -91,21 +118,42 @@ namespace raven
             }
         }
         entityDesc_t cEntityDB::get(
-            int pid, 
-            const std::vector<int>& vatt)
+            int pid,
+            const std::vector<int> &vatt) 
         {
             entityDesc_t ret;
             ret.first = pid;
-            for( auto att : vatt )
+            for (auto att : vatt)
             {
-                for( auto& v : myValue )
+                for (auto &v : myValue)
                 {
-                    if( v.pid == pid )
-                        if( v.aid == att )
-                            ret.second.push_back( v.value );
+                    if (v.pid == pid)
+                        if (v.aid == att)
+                            ret.second.push_back(v.value);
                 }
             }
             return ret;
         }
+        void cEntity::set(
+            const std::vector<std::string> &vals)
+        {
+            myVals = vals;
+        }
+        std::vector<cValue> cEntity::get() const
+        {
+            std::vector<cValue> ret;
+            cValue v;
+            for (int k = 0; k < myAtts.size(); k++)
+            {
+                v.aid = myAtts[k];
+                v.value = myVals[k];
+                ret.push_back(v);
+            }
+            v.aid = 1;
+            v.value = myType;
+            ret.push_back( v );
+            return ret;
+        }
+
     }
 }

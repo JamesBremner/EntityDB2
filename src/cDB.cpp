@@ -15,81 +15,6 @@ cDB::cDB()
     raven::edb::cEntityDB::load("hhct.txt");
 }
 
-void cDB::addNurse(
-    const std::string &name,
-    const std::string &licence,
-    const std::string &service)
-{
-    std::vector<std::pair<int, std::string>> v;
-    v.push_back(std::make_pair((int)eAttribute::name, name));
-    v.push_back(std::make_pair((int)eAttribute::role, "nurse"));
-    v.push_back(std::make_pair((int)eAttribute::nurselicence, licence));
-    v.push_back(std::make_pair((int)eAttribute::service, service));
-
-    add(v);
-}
-void cDB::addPatient(
-    const std::vector<std::string> &vals)
-{
-    std::vector<std::pair<int, std::string>> v;
-    v.push_back(std::make_pair((int)eAttribute::name, vals[0]));
-    v.push_back(std::make_pair((int)eAttribute::role, "patient"));
-    v.push_back(std::make_pair((int)eAttribute::expire, vals[1]));
-    v.push_back(std::make_pair((int)eAttribute::certification, vals[2]));
-    v.push_back(std::make_pair((int)eAttribute::authorization, vals[3]));
-    v.push_back(std::make_pair((int)eAttribute::supplies, vals[4]));
-
-    add(v);
-}
-
-void cDB::updateNurse(
-    int pid,
-    const std::string &name,
-    const std::string &licence,
-    const std::string &service)
-{
-    raven::edb::cValue v;
-    v.pid = pid;
-
-    v.aid = (int)eAttribute::name;
-    v.value = name;
-    update(v);
-    v.aid = (int)eAttribute::nurselicence;
-    v.value = licence;
-    update(v);
-    v.aid = (int)eAttribute::service;
-    v.value = service;
-    update(v);
-
-    save();
-}
-
-void cDB::updatePatient(
-    int pid,
-    const std::vector<std::string> &vals)
-{
-    raven::edb::cValue v;
-    v.pid = pid;
-
-    v.aid = (int)eAttribute::name;
-    v.value = vals[0];
-    update(v);
-    v.aid = (int)eAttribute::expire;
-    v.value = vals[1];
-    update(v);
-    v.aid = (int)eAttribute::certification;
-    v.value = vals[2];
-    update(v);
-    v.aid = (int)eAttribute::authorization;
-    v.value = vals[3];
-    update(v);
-    v.aid = (int)eAttribute::supplies;
-    v.value = vals[4];
-    update(v);
-
-    save();
-}
-
 cDB::vperson_t cDB::nursebyDate(int att)
 {
     myNurseList.clear();
@@ -99,7 +24,11 @@ cDB::vperson_t cDB::nursebyDate(int att)
         {
             // add nurse to list
             myNurseList.push_back(
-                nursePID(v.pid));
+                get(
+                    v.pid,
+                    {(int)eAttribute::name,
+                     (int)eAttribute::nurselicence,
+                     (int)eAttribute::service}));
         }
     }
     // sort into date order
@@ -116,7 +45,13 @@ cDB::vperson_t cDB::patientbyDate(int att)
         if (v.aid == (int)eAttribute::role && v.value == "patient")
         {
             myPatientList.push_back(
-                patientPID(v.pid));
+                get(
+                    v.pid,
+                    {(int)eAttribute::name,
+                     (int)eAttribute::expire,
+                     (int)eAttribute::certification,
+                     (int)eAttribute::authorization,
+                     (int)eAttribute::supplies}));
         }
     }
 
@@ -127,31 +62,22 @@ cDB::vperson_t cDB::patientbyDate(int att)
 
 cDB::person_t cDB::nurselist(int listIndex)
 {
-    return nursePID(
-        myNurseList[listIndex].first);
-}
-cDB::person_t cDB::nursePID(int pid)
-{
     return get(
-        pid,
+        myNurseList[listIndex].first,
         {(int)eAttribute::name,
          (int)eAttribute::nurselicence,
          (int)eAttribute::service});
 }
+
 cDB::person_t cDB::patientlist(int listIndex)
 {
-    return patientPID(
-        myPatientList[listIndex].first);
-}
-cDB::person_t cDB::patientPID(int pid)
-{
     return get(
-        pid,
+        myPatientList[listIndex].first,
         {(int)eAttribute::name,
          (int)eAttribute::expire,
          (int)eAttribute::certification,
          (int)eAttribute::authorization,
-         (int)eAttribute::authorization});
+         (int)eAttribute::supplies});
 }
 
 long long cDB::secs(
