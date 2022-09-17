@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "starter",
+            "label": "hhtc",
             "options": {
                 "cwd": "${workspaceFolder}"
                },
@@ -12,7 +12,47 @@
             "args": [
                 "-f",
                 ".vscode/makefile",
-                "starter"
+                "hhtc"
+            ],
+
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "graph",
+            "options": {
+                "cwd": "${workspaceFolder}"
+               },
+            "command": "mingw32-make.exe",
+            "args": [
+                "-f",
+                ".vscode/makefile",
+                "graph"
+            ],
+
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "ronnie",
+            "options": {
+                "cwd": "${workspaceFolder}"
+               },
+            "command": "mingw32-make.exe",
+            "args": [
+                "-f",
+                ".vscode/makefile",
+                "ronnie"
             ],
 
             "problemMatcher": [

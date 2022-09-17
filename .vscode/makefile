@@ -25,8 +25,16 @@ OPT = -g
 CCflags = -std=c++17 $(OPT) -D_mingw_
 
 # sources
-OBJ_starter = \
-	$(ODIR)/main.o \
+OBJ_hhct = \
+	$(ODIR)/hhct.o \
+	$(ODIR)/cEntity.o \
+
+OBJ_graph = \
+	$(ODIR)/graph.o \
+	$(ODIR)/cEntity.o \
+
+OBJ_ron = \
+	$(ODIR)/ronnie.o \
 	$(ODIR)/cEntity.o \
 
 ### COMPILE
@@ -37,9 +45,19 @@ $(ODIR)/%.o: %.cpp cEntity.h
 
 ### LINK
 
-starter: $(OBJ_starter)
+hhtc: $(OBJ_hhct)
 	g++ $(OPT) \
-	-o bin/starter.exe $^  \
+	-o bin/hhtc.exe $^  \
+	$(static_link_flags) $(LIBS)
+
+graph: $(OBJ_graph)
+	g++ $(OPT) \
+	-o bin/graph.exe $^  \
+	$(static_link_flags) $(LIBS)
+
+ronnie: $(OBJ_ron)
+	g++ $(OPT) \
+	-o bin/ronnie.exe $^  \
 	$(static_link_flags) $(LIBS)
 
 .PHONY: clean

@@ -6,7 +6,7 @@ namespace raven
     {
         /// @brief A pair describing an entity
         /// first is the entity id
-        /// second is a vector of strings containing the attributes
+        /// second is a vector of strings containing the attribute values
         typedef std::pair<
             int, std::vector<std::string>>
             entityDesc_t;
@@ -48,16 +48,14 @@ namespace raven
 
             cEntity(
                 std::string type,
-                const std::vector<int> &vAtts)
-                : myType( type ),
-                myAtts(vAtts)
-            {
-            }
+                const std::vector<int> &vAtts);
 
-            /// @brief set attribute values
+            /// @brief set attribute values from vector
             /// @param[in] vals values
 
             void set(const std::vector<std::string> &vals);
+
+            void set( int att, const std::string& val);
             
             /// @brief get attributes
             /// @return vector of attribute values

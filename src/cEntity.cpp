@@ -1,5 +1,6 @@
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include "cEntity.h"
 
 namespace raven
@@ -152,6 +153,22 @@ namespace raven
                 }
             }
             return ret;
+        }
+
+        cEntity::cEntity(
+            std::string type,
+            const std::vector<int> &vAtts)
+            : myType(type),
+              myAtts(vAtts)
+        {
+            myVals.resize( myAtts.size() );
+        }
+        void cEntity::set(
+            int att,
+            const std::string& val)
+        {
+            myVals[ std::find(myAtts.begin(),myAtts.end(),att)
+            - myAtts.begin()] = val;
         }
         void cEntity::set(
             const std::vector<std::string> &vals)
